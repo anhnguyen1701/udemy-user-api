@@ -15,9 +15,4 @@ export class UsersController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
-
-  @Get('/send-mail-ses')
-  async test(@Body('email') email: string) {
-    return await this.sendGridService.sendMailSes(email);
-  }
 }

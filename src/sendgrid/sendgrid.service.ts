@@ -12,7 +12,7 @@ export class SendgridService {
     return sgMail.send(data);
   }
 
-  public async sendMailSes(email: string) {
+  public async sendMailSes(email: string, otpCode: number) {
     const smtpEndpoint = 'email-smtp.us-east-2.amazonaws.com'; // servername
     const port = '587'; // smtp port
     const senderAddress = 'nguyenlamanh1701@gmail.com'; // email sender
@@ -29,8 +29,6 @@ export class SendgridService {
         pass: smtpPassword,
       },
     });
-
-    const otpCode = Math.floor(100000 + Math.random() * 900000);
 
     //mail options
     const options = {
