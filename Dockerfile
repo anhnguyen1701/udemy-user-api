@@ -1,6 +1,8 @@
 # Base image
 FROM node:18-alpine
 
+ENV NODE_ENV staging
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -18,3 +20,5 @@ RUN npm run build
 
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
+
+EXPOSE 3000
