@@ -23,6 +23,35 @@ export class AuthService {
     private readonly utilsService: UtilsService,
   ) {}
   async register(registerUserDto: RegisterUserDto) {
+    const userExists = await this.userModel.findOne({
+      email: registerUserDto.email,
+    });
+
+    if (userExists && userExists.verify == false) {
+      //generate otp code
+      const otpCode = Math.floor(100000 + Math.random() * 900000);
+
+      //save otp to redis
+      await this.redisClient.set(registerUserDto.email, otpCode);
+      await this.redisClient.expire(registerUserDto.email, 300);
+
+      //send otp mail to user email
+      await this.sendGridService.sendMailAsGmail(
+        registerUserDto.email,
+        otpCode,
+      );
+
+      return {
+        status: 200,
+        message: 'please verify your account',
+      };
+    } else if (userExists && userExists.verify == true) {
+      return {
+        status: 400,
+        message: 'user already exists',
+      };
+    }
+
     try {
       //hash password
       const salt = 10;
@@ -78,7 +107,13 @@ export class AuthService {
     const user = await this.userModel.findOne({ email });
 
     if (user) {
-      console.log(user);
+      if (!user.verify) {
+        return {
+          status: 400,
+          message: 'your account hasnt been verified',
+        };
+      }
+
       const compare = await bcrypt.compare(password, user.password);
       if (compare) {
         console.log(compare);
