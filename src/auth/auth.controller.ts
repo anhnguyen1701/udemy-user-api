@@ -34,8 +34,8 @@ export class AuthController {
     return this.authService.verifyOtp(verifyUserDto);
   }
 
-  // @Post('/login')
-  // async login(@Body() loginUserDto: LoginUserDto) {
-  //   return this.authService.login(loginUserDto);
-  // }
+  @Post('/login')
+  async login(@Body() loginUserDto: LoginUserDto) {
+    return this.authService.login(loginUserDto);
+  }
 }
