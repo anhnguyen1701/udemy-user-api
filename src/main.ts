@@ -17,6 +17,7 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .setTitle('udemy-user-api')
     .setDescription('User Api Service')
+    .addBearerAuth()
     .setVersion('1.0')
     .addTag('users')
     .build();

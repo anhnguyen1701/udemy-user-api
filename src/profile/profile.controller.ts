@@ -14,7 +14,12 @@ import {
 import { ProfileService } from './profile.service';
 import { AuthUserGuard } from 'src/guard/auth-user.guard';
 import { EditProfileDto } from './dto/edit-profile.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { User } from 'src/users/schema/user.schema';
 
 @ApiTags('profile')
@@ -30,6 +35,7 @@ export class ProfileController {
     type: User,
     description: 'return logged user',
   })
+  @ApiBearerAuth()
   getProfile(@Req() request: any) {
     const id = request.user_id;
     return this.profileService.findProfile(id);
@@ -42,6 +48,7 @@ export class ProfileController {
     type: User,
     description: 'return logged user after edited',
   })
+  @ApiBearerAuth()
   editProfile(@Req() request: any, @Body() editProfileDto: EditProfileDto) {
     const id = request.user_id;
 
