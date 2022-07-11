@@ -9,6 +9,7 @@ import { LoginUserDto } from './dto/login-user.tdo';
 import { User, UserDocument } from 'src/users/schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,8 @@ export class AuthService {
 
     private readonly sendGridService: SendgridService,
     @Inject(Redis) private redisClient: Redis,
+
+    private readonly utilsService: UtilsService,
   ) {}
   async register(registerUserDto: RegisterUserDto) {
     try {
@@ -66,22 +69,29 @@ export class AuthService {
     }
   }
 
-  // async login(loginUserDto: LoginUserDto) {
-  //   const {email, password} = loginUserDto;
+  async login(loginUserDto: LoginUserDto) {
+    const { email, password } = loginUserDto;
 
-  // //   const user = await this.userModel.findOne({email});
+    const user = await this.userModel.findOne({ email });
 
-  // //   if(user && user.matchPassword(password))
-  // // }
-
-
-  // // const user = await User.findOne({ email });
-
-  // // if (user && (await user.matchPassword(password))) {
-  // //   res.json({ ...user._doc, token: generateToken(user._id) });
-  // // } else {
-  // //   res.status(401);
-  // //   throw new Error('Invalid Email or Password');
-  // // }
-
+    if (user) {
+      console.log(user);
+      const compare = await bcrypt.compare(password, user.password);
+      if (compare) {
+        console.log(compare);
+        return {
+          status: 200,
+          data: {
+            user,
+            token: await this.utilsService.generateToken(user._id),
+          },
+        };
+      }
+    } else {
+      return {
+        status: 400,
+        message: 'invalid email or password',
+      };
+    }
+  }
 }
