@@ -21,6 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from 'src/users/schema/user.schema';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @ApiTags('profile')
 @UseGuards(AuthUserGuard)
@@ -53,5 +54,15 @@ export class ProfileController {
     const id = request.user_id;
 
     return this.profileService.editProfile(id, editProfileDto);
+  }
+
+  @Patch('/change-password')
+  changePassword(
+    @Req() request: any,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    const id = request.user_id;
+
+    return this.profileService.changePassword(id, changePasswordDto);
   }
 }

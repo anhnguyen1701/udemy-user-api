@@ -124,11 +124,16 @@ export class AuthService {
             token: await this.utilsService.generateToken(user._id),
           },
         };
+      } else {
+        return {
+          status: 400,
+          message: 'invalid password',
+        };
       }
     } else {
       return {
         status: 400,
-        message: 'invalid email or password',
+        message: 'invalid account',
       };
     }
   }
