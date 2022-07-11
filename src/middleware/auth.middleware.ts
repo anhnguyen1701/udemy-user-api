@@ -1,30 +1,26 @@
-import { HttpStatus } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import config from '../config';
 
-export const AuthMiddleware = async (req, res, next) => {
-  let token;
+export const AuthMiddleware =
+  (jwt_secret: string) => (request, response, next) => {
+    const authorization: string =
+      request.headers['Authorization'] || request.headers['authorization'];
+    if (!authorization) {
+      request.user_id = '';
+      return next();
+    }
+    const access_token = authorization.split(' ')[1];
+    if (!access_token) {
+      request.user_id = '';
+      return next();
+    }
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
     try {
-      token = req.headers.authorization.split(' ')[1];
+      const payload = jwt.verify(access_token, jwt_secret);
+      request.user_id = payload['id'];
 
-      const decoded = jwt.verify(token, config.JWT_SECRET);
-
-      console.log(decoded);
-      req.user = decoded;
       return next();
     } catch (error) {
-      res.status(HttpStatus.UNAUTHORIZED);
-      throw new Error('Not authorized, token failed');
+      request.user_id = '';
+      return next();
     }
-  }
-
-  if (!token) {
-    res.status(401);
-    throw new Error('not authorized, no token');
-  }
-};
+  };
