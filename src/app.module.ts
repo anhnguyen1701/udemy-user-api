@@ -7,6 +7,7 @@ import { RedisModule } from './redis/redis.module';
 import { SendgridModule } from './sendgrid/sendgrid.module';
 import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.module';
+import { ProfileModule } from './profile/profile.module';
 import * as mongoose from 'mongoose';
 import config from './config';
 
@@ -28,6 +29,7 @@ if (config.NODE_ENV !== 'production') {
     SendgridModule.forRoot(config.SENDGRID_API_KEY, config.SENDGRID_SENDER),
     AuthModule,
     UtilsModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
