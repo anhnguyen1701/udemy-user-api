@@ -42,7 +42,10 @@ export class AuthService {
       await this.redisClient.expire(registerUserDto.email, 300);
 
       //send otp mail to user email
-      await this.sendGridService.sendMailSes(registerUserDto.email, otpCode);
+      await this.sendGridService.sendMailAsGmail(
+        registerUserDto.email,
+        otpCode,
+      );
 
       return user;
     } catch (error) {
