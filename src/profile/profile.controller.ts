@@ -10,18 +10,25 @@ import {
   Req,
   Put,
   HttpStatus,
+  UploadedFile,
+  UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { AuthUserGuard } from 'src/guard/auth-user.guard';
 import { EditProfileDto } from './dto/edit-profile.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from 'src/users/schema/user.schema';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import * as Multer from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('profile')
 @UseGuards(AuthUserGuard)
@@ -71,5 +78,29 @@ export class ProfileController {
     const id = request.user_id;
 
     return this.profileService.changePassword(id, changePasswordDto);
+  }
+
+  @Patch('/upload-avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  uploadAvatar(
+    @Req() request: any,
+    @Res() response: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const id = request.user_id;
+    return this.profileService.uploadAvatar(id, file, response);
   }
 }

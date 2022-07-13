@@ -13,4 +13,7 @@ export class RegisterUserDto {
   @ApiProperty({ description: 'fullname' })
   @IsNotEmpty()
   readonly fullname: string;
+
+  @ApiProperty({ description: 'avatar' })
+  readonly avatar: string;
 }

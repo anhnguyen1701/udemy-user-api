@@ -21,6 +21,10 @@ export class User {
   @ApiProperty({ description: 'verify' })
   @Prop({ default: false })
   verify: boolean;
+
+  @ApiProperty({ description: 'avatar' })
+  @Prop({ default: '' })
+  avatar: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
