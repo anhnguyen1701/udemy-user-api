@@ -30,7 +30,7 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
-  @ApiOperation({ summary: 'get logged user profile' })
+  @ApiOperation({ summary: 'get user profile' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: User,
@@ -43,7 +43,7 @@ export class ProfileController {
   }
 
   @Put()
-  @ApiOperation({ summary: 'edit logged user profile' })
+  @ApiOperation({ summary: 'edit user profile' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: User,
@@ -57,6 +57,13 @@ export class ProfileController {
   }
 
   @Patch('/change-password')
+  @ApiOperation({ summary: 'change password' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: User,
+    description: 'return user after changepassword',
+  })
+  @ApiBearerAuth()
   changePassword(
     @Req() request: any,
     @Body() changePasswordDto: ChangePasswordDto,
