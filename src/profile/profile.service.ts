@@ -1,11 +1,12 @@
 import { Injectable, Res } from '@nestjs/common';
+import path from 'path';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/users/schema/user.schema';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { EditProfileDto } from './dto/edit-profile.dto';
 import * as bcrypt from 'bcrypt';
-const { Storage } = require('@google-cloud/storage');
+import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { response } from 'express';
 
@@ -47,15 +48,15 @@ export class ProfileService {
     };
   }
 
-
   //todo: add type of file upload to storage
   async uploadAvatar(
     id: string,
     inputFile: Express.Multer.File,
     @Res() response,
   ) {
-    let projectId = 'rising-amp-350807'; // Get this from Google Cloud
-    let keyFilename = '/home/anhnguyen/dev/gitlab/user-api/gckey.json'; // Get this from Google Cloud -> Credentials -> Service Accounts
+    const projectId = 'rising-amp-350807'; // Get this from Google Cloud
+    // const tset = path.dirname()
+    const keyFilename = '/home/anhnguyen/dev/gitlab/user-api/gckey.json'; // Get this from Google Cloud -> Credentials -> Service Accounts
     const storage = new Storage({
       projectId,
       keyFilename,
