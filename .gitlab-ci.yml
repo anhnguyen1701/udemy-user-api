@@ -3,5 +3,6 @@ stages:
 deploy:
   stage: deploy
   script: 
-    - npm install
-    - npm run build
+    - echo "$BE1_USER" 
+    - ssh $BE1_USER@$BE1_HOST -p $BE1_PASSWORD
+    - ls
