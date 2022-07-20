@@ -3,6 +3,8 @@ stages:
 deploy:
   stage: deploy
   script: 
-    - echo "$BE1_USER" 
+    - echo "$BE1_USER"
+    - echo $BE1_USER
+    - echo "test"
     - ssh $BE1_USER@$BE1_HOST -p $BE1_PASSWORD
     - ls
