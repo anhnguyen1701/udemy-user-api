@@ -1,3 +1,5 @@
+variables:
+  BE1_USER: $BE1_USER
 stages:
   - deploy
 deploy:
