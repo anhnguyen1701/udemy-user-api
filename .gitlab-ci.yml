@@ -4,7 +4,6 @@ deploy:
   stage: deploy
   script: 
     - echo "$BE1_USER"
-    - echo $BE1_USER
-    - echo "test"
+    - echo $BE1_HOST
     - ssh $BE1_USER@$BE1_HOST -p $BE1_PASSWORD
     - ls
