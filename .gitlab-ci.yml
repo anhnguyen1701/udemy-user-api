@@ -6,6 +6,7 @@ deploy:
     - echo "$BE1_USER"
     - echo $BE1_HOST
     - ssh root@10.128.0.4
+    - apt list --upgradable
     # - ls
     # - echo $HOSTNAME
     # - ssh $BE1_USER@$BE1_HOST
