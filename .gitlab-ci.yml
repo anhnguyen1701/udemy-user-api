@@ -5,7 +5,7 @@ deploy:
   script: 
     - echo "$BE1_USER"
     - echo $BE1_HOST
-    - ssh -tt root@10.128.0.4 "echo $HOSTNAME"
+    - ssh root@10.128.0.4 "echo $HOSTNAME"
     # - apt list --upgradable
     # - ls
     # - echo $HOSTNAME
