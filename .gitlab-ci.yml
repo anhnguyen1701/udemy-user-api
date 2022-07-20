@@ -1,8 +1,8 @@
 stages:
   - deploy
 deploy:
-  stage: deploy
+  stage: deploy1
   script:
     - echo "$BE1_USER"
     - echo $BE1_HOST
-    - ssh -tt root@10.128.0.4 'echo $HOSTNAME; ls'
+    - ssh -tt root@10.128.0.4 'echo $HOSTNAME; cd user-api; git pull, docker build .'
