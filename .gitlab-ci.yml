@@ -1,7 +1,7 @@
 stages:
   - deploy
 deploy:
-  stage: deploy1
+  stage: deploy
   script:
     - echo "$BE1_USER"
     - echo $BE1_HOST
