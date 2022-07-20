@@ -2,9 +2,13 @@ stages:
   - deploy
 deploy:
   stage: deploy
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )' 
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $BE1_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
   script: 
-    - echo "$BE1_USER"
-    - echo $BE1_HOST
-    - sshpass -p $BE1_PASS
-    - ssh $BE1_USER@$BE1_HOST
-    - ls
+    - ssh $BE1_USER@$BE1_HOST "hostname && echo 'Welcome!!!' > welcome.txt"
