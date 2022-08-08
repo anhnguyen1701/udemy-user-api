@@ -45,4 +45,32 @@ export class SendgridService {
       console.log(error);
     }
   }
+
+  public async sendMailAsGmail(email, otpCode: number) {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'anhnguyenlam171@gmail.com',
+        pass: 'lwdjiwrzkvpdxgtn',
+      },
+    });
+
+    const mailOptions = {
+      from: 'anhnguyenlam171@gmail.com',
+      to: email,
+      subject: 'OTP verification',
+      text:
+        'Your OTP code verification is ' +
+        otpCode +
+        '. OTP code will expire in 5 minute',
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  }
 }

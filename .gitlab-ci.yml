@@ -1,0 +1,9 @@
+stages:
+  - deploy
+deploy:
+  stage: deploy
+  script:
+    - echo "$BE1_USER"
+    - echo $BE1_HOST
+    - ssh -tt root@10.128.0.4 'echo $HOSTNAME; cd user-api; git pull; sudo docker build -t udemy-user-api .;docker kill $(docker ps -q); docker rm $(docker ps -a -q);sudo docker run -dp 3000:3000 udemy-user-api;exit'
+    - ssh -tt root@10.128.0.5 'echo $HOSTNAME; cd user-api; git pull; sudo docker build -t udemy-user-api .;docker kill $(docker ps -q); docker rm $(docker ps -a -q);sudo docker run -dp 3000:3000 udemy-user-api;exit'

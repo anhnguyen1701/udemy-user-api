@@ -1,26 +1,100 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProfileDto } from './dto/create-profile.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import { Injectable, Res } from '@nestjs/common';
+import path from 'path';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from 'src/users/schema/user.schema';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { EditProfileDto } from './dto/edit-profile.dto';
+import * as bcrypt from 'bcrypt';
+import { Storage } from '@google-cloud/storage';
+import { v4 as uuidv4 } from 'uuid';
+import { response } from 'express';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class ProfileService {
-  create(createProfileDto: CreateProfileDto) {
-    return 'This action adds a new profile';
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly amqpConnection: AmqpConnection,
+  ) {}
+
+  async findProfile(id: number) {
+    return await this.userModel.findById(id);
   }
 
-  findAll() {
-    return `This action returns all profile`;
+  async editProfile(id: number, editProfileDto: EditProfileDto) {
+    const user = await this.userModel.findOneAndUpdate(
+      { id: id },
+      editProfileDto,
+      { new: true },
+    );
+
+    this.amqpConnection.publish('user', 'update', {
+      user,
+    });
+
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
+  async changePassword(id: string, changePasswordDto: ChangePasswordDto) {
+    const { newPassword } = changePasswordDto;
+
+    const salt = 10;
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    const user = await this.userModel.findOneAndUpdate(
+      { id },
+      { password: hashPassword },
+      { new: true },
+    );
+
+    return {
+      status: 200,
+      message: user,
+    };
   }
 
-  update(id: number, updateProfileDto: UpdateProfileDto) {
-    return `This action updates a #${id} profile`;
-  }
+  //todo: add type of file upload to storage
+  async uploadAvatar(
+    id: string,
+    inputFile: Express.Multer.File,
+    @Res() response,
+  ) {
+    const projectId = 'rising-amp-350807'; // Get this from Google Cloud
+    // const tset = path.dirname()
+    const keyFilename = '/home/anhnguyen/dev/gitlab/user-api/gckey.json'; // Get this from Google Cloud -> Credentials -> Service Accounts
+    const storage = new Storage({
+      projectId,
+      keyFilename,
+    });
+    const bucket = storage.bucket('rising-amp-350807.appspot.com'); // Get this from Google Cloud -> Storage
 
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+    try {
+      if (inputFile) {
+        const file_name = uuidv4();
+
+        const file = bucket.file(file_name);
+        const stream = file.createWriteStream();
+        await stream.on('finish', async () => {
+          const url =
+            'https://storage.googleapis.com/' +
+            projectId +
+            '.appspot.com/' +
+            file_name;
+
+          const user = await this.userModel.findOneAndUpdate(
+            { id },
+            { avatar: url },
+            { new: true },
+          );
+
+          response.status(200).send(user);
+        });
+
+        stream.end(inputFile.buffer);
+      } else throw 'error';
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
