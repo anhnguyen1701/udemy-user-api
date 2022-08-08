@@ -9,11 +9,13 @@ import * as bcrypt from 'bcrypt';
 import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { response } from 'express';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class ProfileService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly amqpConnection: AmqpConnection,
   ) {}
 
   async findProfile(id: number) {
@@ -26,6 +28,10 @@ export class ProfileService {
       editProfileDto,
       { new: true },
     );
+
+    this.amqpConnection.publish('user', 'update', {
+      user,
+    });
 
     return user;
   }
